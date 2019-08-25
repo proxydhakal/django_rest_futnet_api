@@ -13,6 +13,7 @@ class Post(models.Model):
     venue =models.ForeignKey(VenueList,on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,related_name='posts')
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='post_likes')
+    bookmarks = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='post_bookmarks')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -23,6 +24,9 @@ class Post(models.Model):
     def get_api_like_url(self):
         return reverse("like-api-toggle", kwargs={"pk": self.pk})
 
+    def get_api_favourite_url(self):
+        return reverse("favourite-api-toggle", kwargs={"pk": self.pk})
+
 class Feedback(models.Model):
     commentator=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,related_name='commented_by')
     post = models.ForeignKey(Post, on_delete=models.CASCADE ,related_name='comments')
@@ -31,10 +35,10 @@ class Feedback(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class Bookmark(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE ,related_name='bookmark_posts')
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,related_name='added_by')
-    is_bookmarked = models.BooleanField(default=False)
+# class Bookmark(models.Model):
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE ,related_name='bookmark_posts')
+#     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,related_name='added_by')
+#     is_bookmarked = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.post
+#     def __str__(self):
+#         return self.post

@@ -17,10 +17,6 @@ class PostListByTimeAPIView(generics.ListAPIView):
     serializer_class = serializers.PostSerializer
 
     def get_queryset(self):
-        """
-        This view should return a list of all the purchases for
-        the user as determined by the username portion of the URL.
-        """
         return Post.objects.filter(time=self.kwargs.get('time')).order_by('-created_at')
 
 @api_view(['GET'])
@@ -75,14 +71,19 @@ class CommentCreateAPIView(generics.CreateAPIView):
     
 
 
-# class FavoriteAPIView(generics.ListAPIView):
-#     authentication_classes =[authentication.JWTAuthentication,]
-#     serializer_class = serializers.FavoriteSerializer
-#     permission_classes =[IsAdminOrJournalist]
-#     queryset = Favorite.objects.all()
+class UserFavoriteListAPIView(generics.ListAPIView):
+    authentication_classes =[authentication.JWTAuthentication,]
+    serializer_class = serializers.PostSerializer
+    def get(self,request):
+        user=request.user
+        print(user)
+        bookmarked_posts=user.bookmarks
+        return Response(bookmarked_posts,status=status.HTTP_200_OK)
 
+    
+    
 
-class NewsLikeAPIToggle(APIView):
+class PostLikeAPIToggle(APIView):
     authentication_classes = (authentication.JWTAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -105,6 +106,32 @@ class NewsLikeAPIToggle(APIView):
         data = {
             "updated": updated,
             "liked": liked
+        }
+        return Response(data)
+
+
+class AddFavouriteAPIToggle(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request,pk):
+        pk = self.kwargs.get("pk")
+        obj = get_object_or_404(Post, pk=pk)
+        url_ = obj.get_absolute_url()
+        user = self.request.user
+        updated = False
+        bookmarked = False
+        if user.is_authenticated:
+            if user in obj.bookmarks.all():
+                bookmarked = False
+                obj.bookmarks.remove(user)
+            else:
+                bookmarked = True
+                obj.bookmarks.add(user)
+            updated = True
+        data = {
+            "updated": updated,
+            "bookmarked": bookmarked
         }
         return Response(data)
 

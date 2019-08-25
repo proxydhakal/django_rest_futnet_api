@@ -10,7 +10,8 @@ urlpatterns = [
     path('<int:pk>/delete/',views.DeletePostAPIView.as_view()),
     path('list_by/<str:time>/', views.PostListByTimeAPIView.as_view()),
     path('<int:pk>/comment/',views.CommentCreateAPIView.as_view()),
-    # path('<int:pk>/favourite/',views.FavoriteAPIView.as_view()),
-    path('<int:pk>/like/', views.NewsLikeAPIToggle.as_view(), name='like-api-toggle'),
+    path('list_my_bookmarks/post/',views.UserFavoriteListAPIView.as_view()),
+    path('<int:pk>/like/', views.PostLikeAPIToggle.as_view(), name='like-api-toggle'),
+    path('<int:pk>/bookmark/', views.AddFavouriteAPIToggle.as_view(), name='favourite-api-toggle'),
     
 ]
