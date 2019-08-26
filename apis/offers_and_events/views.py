@@ -12,10 +12,11 @@ from rest_framework import status
 class ListOfferAndOfferPIView(APIView):
     
     def get(self,request):
-        offer_serializer=serializers.OfferSerailizer(many=True)
-        event_serailizer=serializers.EventSerializer(many=True)
+        offers=Offer.objects.all()
+        events=Event.objects.all()
+        offer_serializer=serializers.OfferSerailizer(offers,many=True)
+        event_serailizer=serializers.EventSerializer(events,many=True)
         response_data={"offers":offer_serializer.data,"events":event_serailizer.data}
-        print(response_data)
         return Response(response_data,status=status.HTTP_200_OK)
 
 
